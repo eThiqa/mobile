@@ -1,0 +1,47 @@
+
+---
+
+## Auth
+```
+POST /api/v1/auth/login
+POST /api/v1/auth/verify-otp
+POST /api/v1/auth/register
+POST /api/v1/auth/logout
+```
+
+## Marchés
+```
+GET  /api/v1/marches
+GET  /api/v1/marches/{id}
+GET  /api/v1/marches/{id}/cdc        (file download)
+GET  /api/v1/marches/{id}/questions
+POST /api/v1/marches/{id}/questions
+```
+
+## Soumissions
+```
+GET      /api/v1/soumissions/mes-soumissions
+GET      /api/v1/soumissions/{id}/notes
+POST     /api/v1/soumissions/{marcheId}/enveloppe-admin      (multipart)
+POST     /api/v1/soumissions/{marcheId}/enveloppe-technique  (multipart)
+POST     /api/v1/soumissions/{marcheId}/enveloppe-financiere (multipart)
+POST     /api/v1/soumissions/{marcheId}/confirmer
+```
+
+## Recours & Notifications
+```
+POST /api/v1/recours
+GET  /api/v1/notifications
+PUT  /api/v1/notifications/{id}/lire
+PUT  /api/v1/notifications/lire-toutes
+```
+
+## IA
+```
+POST /api/v1/ia/valider-dossier-admin
+POST /api/v1/ia/estimation-prix/{marcheId}
+
+for now i'm using generic information and a local server.js for testing ,
+the data structure can change based on the database used in the project
+the notifications has not been implimented yet
+
