@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.AlMizan" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/sovereign_navy</item>
+        <item name="colorOnPrimary">@color/neutral_white</item>
+        <item name="colorPrimaryContainer">@color/sovereign_royal</item>
+        <item name="colorOnPrimaryContainer">@color/neutral_white</item>
+        <item name="colorSecondary">@color/sovereign_gold</item>
+        <item name="colorOnSecondary">@color/sovereign_navy</item>
+        <item name="colorSurface">@color/neutral_white</item>
+        <item name="colorOnSurface">@color/neutral_charcoal</item>
+        <item name="android:colorBackground">@color/neutral_ivory</item>
+        <item name="colorOnBackground">@color/neutral_charcoal</item>
+        <item name="colorError">@color/semantic_error</item>
+        <item name="colorOnError">@color/neutral_white</item>
+        <item name="android:windowBackground">@color/neutral_ivory</item>
+        <item name="android:statusBarColor">@color/sovereign_navy</item>
+        <item name="android:navigationBarColor">@color/neutral_white</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeSmall</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeMedium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeLarge</item>
+        <item name="textInputStyle">@style/Widget.AlMizan.TextInputLayout</item>
+        <item name="materialButtonStyle">@style/Widget.AlMizan.Button</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="Theme.AlMizan.Splash" parent="Theme.AlMizan">
+        <item name="android:windowBackground">@color/sovereign_navy</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:statusBarColor">@color/sovereign_navy</item>
+    </style>
+
+    <style name="ShapeSmall" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeMedium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeLarge" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="Widget.AlMizan.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/sovereign_navy</item>
+        <item name="android:textColor">@color/neutral_white</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="rippleColor">@color/sovereign_royal</item>
+    </style>
+
+    <style name="Widget.AlMizan.Button.Gold" parent="Widget.AlMizan.Button">
+        <item name="backgroundTint">@color/sovereign_gold</item>
+        <item name="android:textColor">@color/sovereign_navy</item>
+    </style>
+
+    <style name="Widget.AlMizan.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/sovereign_navy</item>
+        <item name="android:textColor">@color/sovereign_navy</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <style name="Widget.AlMizan.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/input_stroke_color</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="hintTextColor">@color/neutral_dark</item>
+        <item name="android:textColorHint">@color/neutral_medium</item>
+    </style>
+
+    <style name="Widget.AlMizan.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">@color/neutral_white</item>
+        <item name="strokeColor">@color/neutral_light</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.AlMizan.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/sovereign_navy</item>
+        <item name="titleTextColor">@color/neutral_white</item>
+        <item name="subtitleTextColor">@color/neutral_medium</item>
+    </style>
+
+    <style name="Widget.AlMizan.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/bottom_nav_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_selector</item>
+        <item name="backgroundTint">@color/neutral_white</item>
+        <item name="indicatorColor">@color/neutral_light</item>
+    </style>
+
+    <style name="Widget.AlMizan.Chip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_bg_color</item>
+        <item name="chipStrokeColor">@color/neutral_light</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/chip_text_color</item>
+        <item name="chipCornerRadius">8dp</item>
+    </style>
+
+    <style name="TextAppearance.AlMizan.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/neutral_medium</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+</resources>

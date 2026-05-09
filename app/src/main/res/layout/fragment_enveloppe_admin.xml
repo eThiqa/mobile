@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            style="@style/Widget.AlMizan.Card"
+            app:cardBackgroundColor="#FFF8E1">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📋 Documents requis"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="@dimen/spacing_sm"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Registre de Commerce\n• Attestation CNAS/CASNOS\n• Attestation fiscale\n• Références professionnelles\n• Déclaration de candidature"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:lineSpacingExtra="4dp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tvNbDocs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 document(s) ajouté(s)"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="@dimen/spacing_md"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupDocs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAjouterDoc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📎 Ajouter un PDF"
+            style="@style/Widget.AlMizan.Button.Outlined"
+            android:layout_marginBottom="@dimen/spacing_sm"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScanDoc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📷 Scanner un document"
+            style="@style/Widget.AlMizan.Button.Outlined"
+            app:strokeColor="@color/semantic_info"
+            android:textColor="@color/semantic_info"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- === SOVEREIGN PALETTE (Al-Mizan Web) === -->
+    <color name="sovereign_navy">#0A1628</color>
+    <color name="sovereign_royal">#1E3A5F</color>
+    <color name="sovereign_gold">#C5A572</color>
+    <color name="sovereign_bronze">#8B7355</color>
+
+    <!-- === NEUTRAL === -->
+    <color name="neutral_white">#FFFFFF</color>
+    <color name="neutral_ivory">#FAFAFA</color>
+    <color name="neutral_light">#F1F5F9</color>
+    <color name="neutral_medium">#94A3B8</color>
+    <color name="neutral_dark">#475569</color>
+    <color name="neutral_charcoal">#1E293B</color>
+
+    <!-- === SEMANTIC === -->
+    <color name="semantic_success">#059669</color>
+    <color name="semantic_success_container">#DCFCE7</color>
+    <color name="semantic_warning">#D97706</color>
+    <color name="semantic_warning_container">#FEF3C7</color>
+    <color name="semantic_error">#DC2626</color>
+    <color name="semantic_error_container">#FEE2E2</color>
+    <color name="semantic_info">#0284C7</color>
+    <color name="semantic_info_container">#E0F2FE</color>
+
+    <!-- === ALIASES (Legacy Compatibility) === -->
+    <color name="primary_green">#1E3A5F</color>
+    <color name="primary_green_dark">#0A1628</color>
+    <color name="primary_green_light">#F1F5F9</color>
+    <color name="accent_blue">#0284C7</color>
+    <color name="accent_orange">#D97706</color>
+    <color name="accent_gold">#C5A572</color>
+    <color name="background_primary">#FAFAFA</color>
+    <color name="surface_color">#FFFFFF</color>
+    <color name="text_primary">#1E293B</color>
+    <color name="text_secondary">#475569</color>
+    <color name="divider_color">#F1F5F9</color>
+    <color name="white">#FFFFFF</color>
+    <!-- Alias statuts (utilisés dans les adapters Kotlin) -->
+    <color name="status_green">#2E7D32</color>
+    <color name="status_green_bg">#E8F5E9</color>
+    <color name="status_orange">#E65100</color>
+    <color name="status_orange_bg">#FFF3E0</color>
+    <color name="status_blue">#1565C0</color>
+    <color name="status_blue_bg">#E3F2FD</color>
+    <color name="status_grey">#757575</color>
+    <color name="status_grey_bg">#F5F5F5</color>
+    <color name="status_red">#C62828</color>
+    <color name="status_red_bg">#FFEBEE</color>
+    <color name="bottom_nav_selected">#C5A572</color>
+    <color name="bottom_nav_unselected">#94A3B8</color>
+</resources>

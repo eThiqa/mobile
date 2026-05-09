@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Al-Mizan</string>
+    <string name="app_tagline">Marchés Publics Numériques</string>
+
+    <!-- Nav -->
+    <string name="nav_dashboard">Accueil</string>
+    <string name="nav_marches">Marchés</string>
+    <string name="nav_suivi">Mes dossiers</string>
+    <string name="nav_notifications">Alertes</string>
+
+    <!-- Auth -->
+    <string name="label_email">Adresse email</string>
+    <string name="label_password">Mot de passe</string>
+    <string name="btn_login">Se connecter</string>
+    <string name="link_no_account">Pas encore de compte ? S\'inscrire</string>
+
+    <!-- OTP -->
+    <string name="otp_title">Vérification 2FA</string>
+    <string name="otp_label">Code OTP (6 chiffres)</string>
+    <string name="btn_verify">Vérifier</string>
+    <string name="btn_resend">Renvoyer le code</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_greeting">Bonjour 👋</string>
+    <string name="dashboard_ao_ouverts">AO ouverts</string>
+    <string name="dashboard_mes_depots">Mes dépôts</string>
+    <string name="dashboard_recours">Recours</string>
+    <string name="dashboard_dernières_alertes">Dernières alertes</string>
+
+    <!-- Soumission -->
+    <string name="soumission_title">Déposer une offre</string>
+    <string name="btn_prev">Précédent</string>
+    <string name="btn_next">Suivant</string>
+    <string name="btn_confirm">Confirmer le dépôt</string>
+
+    <!-- General -->
+    <string name="btn_cancel">Annuler</string>
+    <string name="loading">Chargement…</string>
+    <string name="error_network">Impossible de joindre le serveur</string>
+    <string name="marches_search_hint">Rechercher un marché...</string>
+    <string name="filter_all">Tous</string>
+    <string name="filter_en_cours">En cours</string>
+    <string name="filter_cloture">Clôturé</string>
+    <string name="filter_evaluation">Évaluation</string>
+    <string name="marche_empty">Aucun marché trouvé</string>
+</resources>
