@@ -9,10 +9,8 @@ interface ApiService {
 
     // --- AUTH ---
     @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): Response<ApiResponse<LoginResponse>>
+    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
-    @POST("auth/verify-otp")
-    suspend fun verifyOtp(@Body request: OtpRequest): Response<ApiResponse<LoginResponse>>
 
     @POST("auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<ApiResponse<User>>
@@ -20,38 +18,38 @@ interface ApiService {
     @POST("auth/logout")
     suspend fun logout(): Response<ApiResponse<Unit>>
 
-    // --- MARCHÉS ---
-    @GET("marches")
+    // --- MARCHÉS (tenders) ---
+    @GET("tenders")
     suspend fun getMarches(
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 20,
-        @Query("statut") statut: String? = null,
-        @Query("secteur") secteur: String? = null,
+        @Query("status") statut: String? = null,
+        @Query("sector") secteur: String? = null,
         @Query("wilaya") wilaya: String? = null,
         @Query("search") search: String? = null
     ): Response<ApiResponse<List<Marche>>>
 
-    @GET("marches/{id}")
+    @GET("tenders/{id}")
     suspend fun getMarcheById(@Path("id") id: String): Response<ApiResponse<Marche>>
 
-    @GET("marches/{id}/cdc")
+    @GET("tenders/{id}/cdc/download")
     suspend fun downloadCdc(@Path("id") id: String): Response<okhttp3.ResponseBody>
 
     // --- QUESTIONS ---
-    @GET("marches/{id}/questions")
+    @GET("tenders/{id}/questions")
     suspend fun getQuestions(@Path("id") id: String): Response<ApiResponse<List<Question>>>
 
-    @POST("marches/{id}/questions")
+    @POST("tenders/{id}/questions")
     suspend fun poserQuestion(
         @Path("id") id: String,
         @Body body: Map<String, String>
     ): Response<ApiResponse<Question>>
 
     // --- SOUMISSIONS ---
-    @GET("soumissions/mes-soumissions")
+    @GET("soumissions/my")
     suspend fun getMesSoumissions(): Response<ApiResponse<List<Soumission>>>
 
-    @GET("soumissions/{id}/notes")
+    @GET("soumissions/{id}/scores")
     suspend fun getNotesDetail(@Path("id") id: String): Response<ApiResponse<Map<String, Any>>>
 
     @Multipart
@@ -76,7 +74,7 @@ interface ApiService {
         @Part("montant") montant: okhttp3.RequestBody
     ): Response<ApiResponse<Map<String, Any>>>
 
-    @POST("soumissions/{marcheId}/confirmer")
+    @POST("soumissions/{marcheId}/confirm")
     suspend fun confirmerSoumission(
         @Path("marcheId") marcheId: String
     ): Response<ApiResponse<Soumission>>
@@ -89,20 +87,36 @@ interface ApiService {
     @GET("notifications")
     suspend fun getNotifications(): Response<ApiResponse<List<Notification>>>
 
-    @PUT("notifications/{id}/lire")
+    @POST("notifications/{id}/read")
     suspend fun marquerLue(@Path("id") id: String): Response<ApiResponse<Unit>>
 
-    @PUT("notifications/lire-toutes")
+    @POST("notifications/read-all")
     suspend fun marquerToutesLues(): Response<ApiResponse<Unit>>
 
     // --- IA ---
-    @POST("ia/valider-dossier-admin")
+    @POST("ia/validate-admin-dossier")
     suspend fun validerDossierAdmin(
         @Body body: Map<String, String>
     ): Response<ApiResponse<Map<String, Any>>>
 
-    @POST("ia/estimation-prix/{marcheId}")
+    @POST("ia/price-estimate/{marcheId}")
     suspend fun getEstimationPrix(
         @Path("marcheId") marcheId: String
     ): Response<ApiResponse<Map<String, Any>>>
+    // Add this — no auth needed
+    @GET("tenders")
+    suspend fun getMarches(
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 20,
+        @Query("status") statut: String? = null,
+        @Query("search") search: String? = null
+    ): Response<PaginatedResponse<Marche>>
+
+    @GET("tenders/public")
+    suspend fun getMarchesPublic(
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 20
+    ): Response<PaginatedResponse<Marche>>
+    @POST("auth/verify-otp")
+    suspend fun verifyOtp(@Body request: OtpRequest): Response<ApiResponse<OtpResponse>>
 }

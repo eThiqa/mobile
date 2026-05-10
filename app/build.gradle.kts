@@ -15,7 +15,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "\"http://localhost:3000/api/v1/\"")
+       // buildConfigField("String", "BASE_URL", "\"http://localhost:3000/api/v1/\"")
+        buildConfigField ("String", "BASE_URL", "\"http://localhost:3000/\"")
     // buildConfigField("String", "BASE_URL", "\"https://api.almizan.dz/api/v1/\"")
     }
 

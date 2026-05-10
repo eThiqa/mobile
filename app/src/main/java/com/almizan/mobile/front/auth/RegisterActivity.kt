@@ -46,14 +46,10 @@ class RegisterActivity : AppCompatActivity() {
             if (!validateForm()) return@setOnClickListener
 
             viewModel.register(
-                nom = binding.etNom.text.toString().trim(),
-                prenom = binding.etPrenom.text.toString().trim(),
                 email = binding.etEmail.text.toString().trim(),
-                telephone = binding.etTelephone.text.toString().trim(),
-                raisonSociale = binding.etRaisonSociale.text.toString().trim(),
-                registreCommerce = binding.etRegistreCommerce.text.toString().trim(),
-                secteurActivite = binding.actvSecteur.text.toString().trim(),
-                password = binding.etPassword.text.toString()
+                password = binding.etPassword.text.toString(),
+                firstName = binding.etPrenom.text.toString().trim(),
+                lastName = binding.etNom.text.toString().trim()
             )
         }
     }

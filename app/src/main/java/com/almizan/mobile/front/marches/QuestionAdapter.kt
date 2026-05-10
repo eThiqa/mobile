@@ -4,6 +4,7 @@ package com.almizan.mobile.front.marches
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import android.view.View
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.almizan.mobile.data.models.Question
@@ -14,17 +15,18 @@ class QuestionAdapter : ListAdapter<Question, QuestionAdapter.ViewHolder>(DIFF) 
     inner class ViewHolder(val binding: ItemQuestionBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(q: Question) {
-            binding.tvQuestion.text = "❓ ${q.contenu}"
-            binding.tvDateQuestion.text = q.dateQuestion
-            if (q.reponse != null) {
-                binding.tvReponse.text = "💬 ${q.reponse}"
-                binding.tvReponse.visibility = android.view.View.VISIBLE
-                binding.tvDateReponse.text = q.dateReponse ?: ""
-                binding.tvDateReponse.visibility = android.view.View.VISIBLE
+            binding.tvQuestion.text = "❓ ${q.question_text}"
+            binding.tvDateQuestion.text = q.created_at.take(10)
+            if (q.answer_text != null) {
+                binding.tvReponse.text = "💬 ${q.answer_text}"
+                binding.tvReponse.visibility = View.VISIBLE
+                binding.tvDateReponse.text = q.answered_at?.take(10) ?: ""
+                binding.tvDateReponse.visibility = View.VISIBLE
+                binding.tvEnAttente.visibility = View.GONE
             } else {
-                binding.tvReponse.visibility = android.view.View.GONE
-                binding.tvDateReponse.visibility = android.view.View.GONE
-                binding.tvEnAttente.visibility = android.view.View.VISIBLE
+                binding.tvReponse.visibility = View.GONE
+                binding.tvDateReponse.visibility = View.GONE
+                binding.tvEnAttente.visibility = View.VISIBLE
             }
         }
     }

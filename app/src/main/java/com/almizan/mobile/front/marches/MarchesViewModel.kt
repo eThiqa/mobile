@@ -42,19 +42,20 @@ class MarchesViewModel(app: Application) : AndroidViewModel(app) {
 
     fun filterByStatut(statut: String?) {
         currentStatut = statut
-        applyFilters()
+        val filtered = if (statut == null) allMarches
+        else allMarches.filter { it.status == statut }
+        _marches.value = Resource.Success(filtered)
     }
 
     fun search(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            delay(300) // debounce
+            delay(300)
             val filtered = allMarches.filter { marche ->
-                (currentStatut == null || marche.statut.name == currentStatut) &&
+                (currentStatut == null || marche.status == currentStatut) &&
                         (query.isBlank() ||
-                                marche.titre.contains(query, ignoreCase = true) ||
-                                marche.reference.contains(query, ignoreCase = true) ||
-                                marche.serviceContractant.contains(query, ignoreCase = true))
+                                marche.getTitre().contains(query, ignoreCase = true) ||
+                                marche.getReference().contains(query, ignoreCase = true))
             }
             _marches.value = Resource.Success(filtered)
         }
@@ -62,7 +63,7 @@ class MarchesViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun applyFilters() {
         val filtered = if (currentStatut == null) allMarches
-        else allMarches.filter { it.statut.name == currentStatut }
+        else allMarches.filter { it.status == currentStatut }  // was: it.statut.name
         _marches.value = Resource.Success(filtered)
     }
 }

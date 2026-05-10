@@ -1,6 +1,5 @@
 package com.almizan.mobile.front.auth
 
-
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -20,8 +19,7 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
     private val _loginState = MutableLiveData<Resource<Boolean>>()
     val loginState: LiveData<Resource<Boolean>> = _loginState
 
-    // true = OTP requis, false = connecté directement
-    private val _requiresOtp = MutableLiveData<String?>() // email si OTP requis
+    private val _requiresOtp = MutableLiveData<String?>()
     val requiresOtp: LiveData<String?> = _requiresOtp
 
     fun login(email: String, password: String) {
@@ -34,19 +32,25 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val response = api.login(LoginRequest(email, password))
                 if (response.isSuccessful) {
-                    val body = response.body()?.data
+                    val body = response.body()
                     if (body != null) {
                         if (body.requiresOtp) {
                             _requiresOtp.value = email
                         } else {
-                            session.saveSession(
-                                token = body.token,
-                                userId = body.user.id,
-                                name = "${body.user.prenom} ${body.user.nom}",
-                                role = body.user.role,
-                                email = body.user.email
-                            )
-                            _loginState.value = Resource.Success(true)
+                            val token = body.resolveToken()  // ← fixed
+                            val user = body.user
+                            if (user != null && token.isNotEmpty()) {
+                                session.saveSession(
+                                    token = body.resolveToken(),  // ← fixed
+                                    userId = user.id,
+                                    name = "${user.first_name} ${user.last_name}",
+                                    role = user.role,
+                                    email = user.email
+                                )
+                                _loginState.value = Resource.Success(true)
+                            } else {
+                                _loginState.value = Resource.Error("Réponse invalide")
+                            }
                         }
                     } else {
                         _loginState.value = Resource.Error("Réponse invalide")
@@ -54,10 +58,10 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
                 } else {
                     val msg = when (response.code()) {
                         401 -> "Email ou mot de passe incorrect"
-                        403 -> "Compte non validé par l'administrateur"
+                        403 -> "Compte non validé"
                         else -> "Erreur serveur (${response.code()})"
                     }
-                    _loginState.value = Resource.Error(msg, response.code())
+                    _loginState.value = Resource.Error(msg)
                 }
             } catch (e: Exception) {
                 _loginState.value = Resource.Error("Impossible de joindre le serveur")

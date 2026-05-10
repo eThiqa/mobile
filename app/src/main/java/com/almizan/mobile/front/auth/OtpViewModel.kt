@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.almizan.mobile.data.api.ApiClient
+import com.almizan.mobile.data.models.LoginRequest
 import com.almizan.mobile.data.models.OtpRequest
 import com.almizan.mobile.utils.Resource
 import com.almizan.mobile.utils.SessionManager
@@ -25,7 +26,7 @@ class OtpViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val response = api.verifyOtp(OtpRequest(email, otp))
                 if (response.isSuccessful) {
-                    val body = response.body()?.data
+                    val body = response.body()?.data  // OtpResponse
                     if (body != null) {
                         session.saveSession(
                             token = body.token,
@@ -55,8 +56,7 @@ class OtpViewModel(app: Application) : AndroidViewModel(app) {
     fun resendOtp(email: String) {
         viewModelScope.launch {
             try {
-                // Appel API pour renvoyer l'OTP — endpoint à adapter
-                api.login(com.almizan.mobile.data.models.LoginRequest(email, ""))
+                api.login(LoginRequest(email, ""))
             } catch (_: Exception) { }
         }
     }

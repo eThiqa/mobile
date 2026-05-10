@@ -40,7 +40,6 @@ class QuestionsActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             viewModel.poserQuestion(marcheId, contenu)
-            binding.etQuestion.setText("")
         }
 
         viewModel.questions.observe(this) { resource ->

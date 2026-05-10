@@ -18,44 +18,29 @@ class RegisterViewModel(app: Application) : AndroidViewModel(app) {
     val registerState: LiveData<Resource<String>> = _registerState
 
     fun register(
-        nom: String,
-        prenom: String,
         email: String,
-        telephone: String,
         password: String,
-        raisonSociale: String,
-        registreCommerce: String,
-        secteurActivite: String
+        firstName: String,
+        lastName: String
     ) {
         _registerState.value = Resource.Loading
         viewModelScope.launch {
             try {
                 val response = api.register(
                     RegisterRequest(
-                        nom = nom,
-                        prenom = prenom,
                         email = email,
-                        telephone = telephone,
                         password = password,
-                        raisonSociale = raisonSociale,
-                        registreCommerce = registreCommerce,
-                        secteurActivite = secteurActivite
+                        first_name = firstName,
+                        last_name = lastName
                     )
                 )
                 if (response.isSuccessful) {
-                    _registerState.value = Resource.Success(
-                        "Compte créé avec succès ! En attente de validation."
-                    )
+                    _registerState.value = Resource.Success("Compte créé avec succès !")
                 } else {
-                    val msg = when (response.code()) {
-                        409 -> "Un compte existe déjà avec cet email"
-                        422 -> "Données invalides. Vérifiez le formulaire."
-                        else -> "Erreur serveur (${response.code()})"
-                    }
-                    _registerState.value = Resource.Error(msg)
+                    _registerState.value = Resource.Error("Erreur ${response.code()}")
                 }
             } catch (e: Exception) {
-                _registerState.value = Resource.Error("Impossible de joindre le serveur")
+                _registerState.value = Resource.Error("Connexion impossible")
             }
         }
     }

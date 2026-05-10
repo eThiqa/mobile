@@ -1,6 +1,5 @@
 package com.almizan.mobile.front.marches
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -37,22 +36,31 @@ class MarchesFragment : Fragment() {
         binding.rvMarches.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMarches.adapter = adapter
 
-        // Recherche live
+        // Live search
         binding.etSearch.addTextChangedListener {
             viewModel.search(it.toString())
         }
 
-        // Chip filters
+        // Chip filters — use real backend status values, filter client-side
+        // Chip filters — use real backend status values
         binding.chipAll.setOnCheckedChangeListener { _, checked ->
             if (checked) viewModel.filterByStatut(null)
         }
+
         binding.chipEnCours.setOnCheckedChangeListener { _, checked ->
-            if (checked) viewModel.filterByStatut("EN_COURS")
-        }
-        binding.chipCloture.setOnCheckedChangeListener { _, checked ->
-            if (checked) viewModel.filterByStatut("CLOTURE")
+            // Published/open tenders
+            if (checked) viewModel.filterByStatut("PUBLISHED")
         }
 
+        binding.chipCloture.setOnCheckedChangeListener { _, checked ->
+            // Closed tenders
+            if (checked) viewModel.filterByStatut("CLOSED")
+        }
+
+        binding.chipEvaluation.setOnCheckedChangeListener { _, checked ->
+            // Evaluation phase
+            if (checked) viewModel.filterByStatut("UNDER_REVIEW")
+        }
         viewModel.marches.observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Loading -> {
@@ -63,7 +71,8 @@ class MarchesFragment : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     val list = resource.data
                     adapter.submitList(list)
-                    binding.tvEmpty.visibility = if (list.isNullOrEmpty()) View.VISIBLE else View.GONE
+                    binding.tvEmpty.visibility =
+                        if (list.isNullOrEmpty()) View.VISIBLE else View.GONE
                 }
                 is Resource.Error -> {
                     binding.progressBar.visibility = View.GONE

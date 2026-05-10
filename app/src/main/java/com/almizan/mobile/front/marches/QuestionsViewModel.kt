@@ -42,7 +42,10 @@ class QuestionsViewModel(app: Application) : AndroidViewModel(app) {
         _postState.value = Resource.Loading
         viewModelScope.launch {
             try {
-                val response = api.poserQuestion(marcheId, mapOf("contenu" to contenu))
+                val response = api.poserQuestion(
+                    marcheId,
+                    mapOf("question_text" to contenu)  // ← real field name
+                )
                 if (response.isSuccessful) {
                     val data = response.body()?.data
                     if (data != null) _postState.value = Resource.Success(data)

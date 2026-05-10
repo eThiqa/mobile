@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.almizan.mobile.R
 import com.almizan.mobile.data.models.Marche
-import com.almizan.mobile.data.models.MarcheStatut
+
 import com.almizan.mobile.databinding.ItemMarcheBinding
 
 class MarcheAdapter(private val onClick: (Marche) -> Unit) :
@@ -17,21 +17,20 @@ class MarcheAdapter(private val onClick: (Marche) -> Unit) :
     inner class ViewHolder(val binding: ItemMarcheBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(marche: Marche) {
-            binding.tvTitre.text = marche.titre
-            binding.tvReference.text = marche.reference
-            binding.tvServiceContractant.text = marche.serviceContractant
-            binding.tvWilaya.text = marche.wilaya
-            binding.tvTypePill.text = marche.typeMarche
-            binding.tvDateLimite.text = "Limite : ${marche.dateLimiteSoumission}"
+            binding.tvTitre.text = marche.getTitre()
+            binding.tvReference.text = marche.getReference()
+            binding.tvServiceContractant.text = marche.service_contractant_id ?: "—"
 
-            // Statut badge
-            val (color, label) = when (marche.statut) {
-                MarcheStatut.EN_COURS -> Pair(R.color.status_green, "En cours")
-                MarcheStatut.CLOTURE -> Pair(R.color.status_grey, "Clôturé")
-                MarcheStatut.EVALUATION -> Pair(R.color.status_orange, "Évaluation")
-                MarcheStatut.ATTRIBUE_PROVISOIRE -> Pair(R.color.status_blue, "Attribué prov.")
-                MarcheStatut.ATTRIBUE_DEFINITIF -> Pair(R.color.status_blue, "Attribué déf.")
-                MarcheStatut.ANNULE -> Pair(R.color.status_red, "Annulé")
+            binding.tvDateLimite.text = "Limite : ${marche.getDateLimite()}"
+
+            val (color, label) = when (marche.resolveStatut().uppercase()) {
+                "PUBLISHED", "EN_COURS" -> Pair(R.color.status_green, "En cours")
+                "CLOSED", "CLOTURE" -> Pair(R.color.status_grey, "Clôturé")
+                "UNDER_REVIEW", "EVALUATION" -> Pair(R.color.status_orange, "Évaluation")
+                "VISA_APPROVED", "ATTRIBUE_PROVISOIRE" -> Pair(R.color.status_blue, "Attribué prov.")
+                "ARCHIVED", "ANNULE" -> Pair(R.color.status_red, "Annulé")
+                "DRAFT" -> Pair(R.color.status_grey, "Brouillon")
+                else -> Pair(R.color.status_grey, marche.resolveStatut())
             }
             binding.tvStatutBadge.text = label
             binding.tvStatutBadge.backgroundTintList =
