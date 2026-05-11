@@ -6,12 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.almizan.mobile.data.models.User
 import com.almizan.mobile.databinding.FragmentProfilBinding
 import com.almizan.mobile.front.auth.LoginActivity
+import com.almizan.mobile.utils.Resource
 import com.almizan.mobile.utils.SessionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ProfilFragment : Fragment() {
@@ -19,6 +23,7 @@ class ProfilFragment : Fragment() {
     private var _binding: FragmentProfilBinding? = null
     private val binding get() = _binding!!
     private lateinit var session: SessionManager
+    private val viewModel: ProfilViewModel by viewModels()
     private var isEditMode = false
 
     override fun onCreateView(
@@ -33,9 +38,33 @@ class ProfilFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         session = SessionManager(requireContext())
 
-        chargerProfil()
+        viewModel.loadProfile()
 
-        // Bouton Modifier / Sauvegarder
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.userState.collectLatest { state ->
+                when (state) {
+                    is Resource.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is Resource.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        afficherUser(state.data)
+                        session.saveUserData(
+                            nom = state.data.last_name,
+                            prenom = state.data.first_name,
+                            telephone = state.data.phone_number ?: "",
+                            raisonSociale = ""
+                        )
+                    }
+                    is Resource.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        chargerDepuisDataStore()
+                        Snackbar.make(binding.root, "Données locales (${state.message})", Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
         binding.btnModifier.setOnClickListener {
             if (!isEditMode) activerEdition()
             else binding.btnSauvegarder.performClick()
@@ -45,60 +74,63 @@ class ProfilFragment : Fragment() {
             sauvegarderProfil()
         }
 
-        // Bouton Déconnexion
         binding.btnDeconnexion.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Déconnexion")
                 .setMessage("Voulez-vous vraiment vous déconnecter ?")
                 .setNegativeButton("Annuler", null)
                 .setPositiveButton("Se déconnecter") { _, _ ->
-                    deconnecter()
+                    lifecycleScope.launch {
+                        session.clearSession()
+                        naviguerVersLogin()
+                    }
                 }
                 .show()
         }
     }
 
-    private fun chargerProfil() {
-        // Charger depuis SessionManager
-        val nom = session.getUserData("nom") ?: ""
-        val prenom = session.getUserData("prenom") ?: ""
-        val email = session.getUserData("email") ?: ""
-        val telephone = session.getUserData("telephone") ?: ""
-        val raisonSociale = session.getUserData("raison_sociale") ?: ""
-        val registreCommerce = session.getUserData("registre_commerce") ?: ""
-
-        binding.etNom.setText(nom)
-        binding.etPrenom.setText(prenom)
-        binding.etTelephone.setText(telephone)
-        binding.etRaisonSociale.setText(raisonSociale)
-        binding.etRegistreCommerce.setText(registreCommerce)
-        binding.tvEmail.text = email
-        binding.tvNomComplet.text = "$prenom $nom".trim().ifEmpty { "Mon Profil" }
-
-        // Initiales avatar
-        val initiales = buildString {
-            if (prenom.isNotEmpty()) append(prenom.first().uppercaseChar())
-            if (nom.isNotEmpty()) append(nom.first().uppercaseChar())
-        }.ifEmpty { "OE" }
-        binding.tvAvatar.text = initiales
+    private fun afficherUser(user: User) {
+        binding.tvNomComplet.text = "${user.first_name} ${user.last_name}".trim().ifEmpty { "Mon Profil" }
+        binding.tvEmail.text = user.email
+        binding.tvAvatar.text = buildString {
+            if (user.first_name.isNotEmpty()) append(user.first_name.first().uppercaseChar())
+            if (user.last_name.isNotEmpty()) append(user.last_name.first().uppercaseChar())
+        }.ifEmpty { "?" }
+        binding.etNom.setText(user.last_name)
+        binding.etPrenom.setText(user.first_name)
+        binding.etTelephone.setText(user.phone_number ?: "")
+        binding.etWilaya.setText(user.wilaya ?: "")
+        binding.etAdresse.setText(user.address ?: "")
+        binding.tvStatut.text = if (user.is_verified) "✅ Vérifié" else "⏳ En attente de vérification"
+        binding.tvRole.text = when (user.role) {
+            "OPERATEUR", "OE" -> "Opérateur Économique"
+            "ADM", "ADMIN" -> "Administrateur"
+            "ACHETEUR", "SC" -> "Acheteur Public"
+            else -> user.role
+        }
     }
 
     private fun activerEdition() {
         isEditMode = true
-        binding.etNom.isEnabled = true
-        binding.etPrenom.isEnabled = true
-        binding.etTelephone.isEnabled = true
-        binding.etRaisonSociale.isEnabled = true
+        listOf(binding.etNom, binding.etPrenom, binding.etTelephone,
+            binding.etWilaya, binding.etAdresse).forEach {
+            it.isFocusable = true
+            it.isFocusableInTouchMode = true
+            it.isEnabled = true
+        }
+        binding.etNom.requestFocus()
         binding.btnModifier.text = "✏️ En cours d'édition…"
         binding.btnSauvegarder.visibility = View.VISIBLE
     }
 
     private fun desactiverEdition() {
         isEditMode = false
-        binding.etNom.isEnabled = false
-        binding.etPrenom.isEnabled = false
-        binding.etTelephone.isEnabled = false
-        binding.etRaisonSociale.isEnabled = false
+        listOf(binding.etNom, binding.etPrenom, binding.etTelephone,
+            binding.etWilaya, binding.etAdresse).forEach {
+            it.isFocusable = false
+            it.isFocusableInTouchMode = false
+            it.isEnabled = false
+        }
         binding.btnModifier.text = "✏️ Modifier le profil"
         binding.btnSauvegarder.visibility = View.GONE
     }
@@ -106,21 +138,17 @@ class ProfilFragment : Fragment() {
     private fun sauvegarderProfil() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnSauvegarder.isEnabled = false
-
-        // TODO : appel API PATCH /profil avec les nouvelles valeurs
-        // Pour l'instant on sauvegarde localement dans SessionManager
         lifecycleScope.launch {
             try {
                 session.saveUserData(
                     nom = binding.etNom.text.toString().trim(),
                     prenom = binding.etPrenom.text.toString().trim(),
                     telephone = binding.etTelephone.text.toString().trim(),
-                    raisonSociale = binding.etRaisonSociale.text.toString().trim()
+                    raisonSociale = ""
                 )
                 binding.progressBar.visibility = View.GONE
                 binding.btnSauvegarder.isEnabled = true
                 desactiverEdition()
-                chargerProfil()
                 Snackbar.make(binding.root, "✅ Profil mis à jour", Snackbar.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.GONE
@@ -130,13 +158,28 @@ class ProfilFragment : Fragment() {
         }
     }
 
-    private fun deconnecter() {
-        lifecycleScope.launch {
-            session.clearSession()
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+    private fun chargerDepuisDataStore() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            session.userDataFlow.collectLatest { data ->
+                val prenom = data["prenom"] ?: ""
+                val nom = data["nom"] ?: ""
+                binding.etNom.setText(nom)
+                binding.etPrenom.setText(prenom)
+                binding.etTelephone.setText(data["telephone"] ?: "")
+                binding.tvNomComplet.text = "$prenom $nom".trim().ifEmpty { "Mon Profil" }
+                binding.tvEmail.text = data["email"] ?: ""
+                binding.tvAvatar.text = buildString {
+                    if (prenom.isNotEmpty()) append(prenom.first().uppercaseChar())
+                    if (nom.isNotEmpty()) append(nom.first().uppercaseChar())
+                }.ifEmpty { "?" }
+            }
         }
+    }
+
+    private fun naviguerVersLogin() {
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     override fun onDestroyView() {

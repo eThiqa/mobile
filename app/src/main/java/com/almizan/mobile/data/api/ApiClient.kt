@@ -25,6 +25,7 @@ object ApiClient {
             .addInterceptor(logging)
             .addInterceptor { chain ->
                 val token = sessionManager.getToken()
+                android.util.Log.e("PROFIL", "Token envoyé: $token")
                 val request = if (token != null) {
                     chain.request().newBuilder()
                         .addHeader("Authorization", "Bearer $token")

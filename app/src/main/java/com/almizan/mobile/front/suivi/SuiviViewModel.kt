@@ -23,7 +23,8 @@ class SuiviViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val response = api.getMesSoumissions()
                 if (response.isSuccessful) {
-                    _soumissions.value = Resource.Success(response.body()?.data ?: emptyList())
+                    // Response is now a raw list
+                    _soumissions.value = Resource.Success(response.body() ?: emptyList())
                 } else {
                     _soumissions.value = Resource.Error("Erreur ${response.code()}")
                 }

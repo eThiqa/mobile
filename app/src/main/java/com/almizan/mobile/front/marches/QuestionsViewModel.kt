@@ -1,7 +1,5 @@
 package com.almizan.mobile.front.marches
 
-
-
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -24,37 +22,49 @@ class QuestionsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun loadQuestions(marcheId: String) {
         _questions.value = Resource.Loading
+
         viewModelScope.launch {
             try {
                 val response = api.getQuestions(marcheId)
+
                 if (response.isSuccessful) {
-                    _questions.value = Resource.Success(response.body()?.data ?: emptyList())
+                    // getQuestions returns Response<List<Question>>, so we use the body directly
+                    val list: List<Question> = response.body()?.data ?: emptyList()
+                    _questions.value = Resource.Success(list)
                 } else {
                     _questions.value = Resource.Error("Erreur ${response.code()}")
                 }
             } catch (e: Exception) {
-                _questions.value = Resource.Error("Connexion impossible")
+                _questions.value = Resource.Error("Connexion impossible: ${e.message}")
             }
         }
     }
 
     fun poserQuestion(marcheId: String, contenu: String) {
         _postState.value = Resource.Loading
+
         viewModelScope.launch {
             try {
                 val response = api.poserQuestion(
                     marcheId,
-                    mapOf("question_text" to contenu)  // ← real field name
+                    mapOf("question_text" to contenu)
                 )
+
                 if (response.isSuccessful) {
-                    val data = response.body()?.data
-                    if (data != null) _postState.value = Resource.Success(data)
-                    else _postState.value = Resource.Error("Réponse invalide")
+                    val body = response.body()
+                    // poserQuestion returns Response<ApiResponse<Question>>, so .data is required
+                    val question = body?.data
+
+                    if (question != null) {
+                        _postState.value = Resource.Success(question)
+                    } else {
+                        _postState.value = Resource.Error("Réponse invalide")
+                    }
                 } else {
                     _postState.value = Resource.Error("Erreur ${response.code()}")
                 }
             } catch (e: Exception) {
-                _postState.value = Resource.Error("Connexion impossible")
+                _postState.value = Resource.Error("Connexion impossible: ${e.message}")
             }
         }
     }

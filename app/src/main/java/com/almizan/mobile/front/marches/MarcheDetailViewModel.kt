@@ -1,6 +1,5 @@
 package com.almizan.mobile.front.marches
 
-
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -23,10 +22,18 @@ class MarcheDetailViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             try {
                 val response = api.getMarcheById(id)
+                // ... inside your Detail load logic ...
+
                 if (response.isSuccessful) {
-                    val data = response.body()?.data
-                    if (data != null) _marche.value = Resource.Success(data)
-                    else _marche.value = Resource.Error("Marché introuvable")
+                    val apiResponse = response.body()
+                    // ✅ Fix: Extract the single Marche from the ApiResponse wrapper
+                    val marcheDetail = apiResponse?.data
+
+                    if (marcheDetail != null) {
+                        _marche.value = Resource.Success(marcheDetail)
+                    } else {
+                        _marche.value = Resource.Error("Données introuvables")
+                    }
                 } else {
                     _marche.value = Resource.Error("Erreur ${response.code()}")
                 }

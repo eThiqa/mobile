@@ -37,15 +37,18 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
                         if (body.requiresOtp) {
                             _requiresOtp.value = email
                         } else {
-                            val token = body.resolveToken()  // ← fixed
+                            val token = body.resolveToken()
                             val user = body.user
                             if (user != null && token.isNotEmpty()) {
                                 session.saveSession(
-                                    token = body.resolveToken(),  // ← fixed
+                                    token = token,
                                     userId = user.id,
                                     name = "${user.first_name} ${user.last_name}",
                                     role = user.role,
-                                    email = user.email
+                                    email = user.email,
+                                    nom = user.last_name,
+                                    prenom = user.first_name,
+                                    telephone = user.phone_number ?: ""
                                 )
                                 _loginState.value = Resource.Success(true)
                             } else {

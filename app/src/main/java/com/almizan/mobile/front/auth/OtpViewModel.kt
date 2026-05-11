@@ -26,14 +26,18 @@ class OtpViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val response = api.verifyOtp(OtpRequest(email, otp))
                 if (response.isSuccessful) {
-                    val body = response.body()?.data  // OtpResponse
-                    if (body != null) {
+                    val body = response.body()
+                    if (body != null && body.user != null) {
+                        val user = body.user
                         session.saveSession(
-                            token = body.token,
-                            userId = body.user.id,
-                            name = "${body.user.prenom} ${body.user.nom}",
-                            role = body.user.role,
-                            email = body.user.email
+                            token = body.resolveToken(),
+                            userId = user.id,
+                            name = "${user.first_name} ${user.last_name}",
+                            role = user.role,
+                            email = user.email,
+                            nom = user.last_name,
+                            prenom = user.first_name,
+                            telephone = user.phone_number ?: ""
                         )
                         _otpState.value = Resource.Success(true)
                     } else {

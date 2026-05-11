@@ -1,5 +1,7 @@
 package com.almizan.mobile.data.models
 
+import com.google.gson.annotations.SerializedName
+
 data class ApiResponse<T>(
     val success: Boolean = true,
     val message: String? = null,
@@ -7,13 +9,16 @@ data class ApiResponse<T>(
 )
 
 data class LoginResponse(
-    val accessToken: String? = null,
+    @SerializedName("token", alternate = ["accessToken", "access_token"])
     val token: String? = null,
+    
+    @SerializedName("refreshToken", alternate = ["refresh_token"])
     val refreshToken: String? = null,
+    
     val requiresOtp: Boolean = false,
     val user: User? = null
 ) {
-    fun resolveToken() = accessToken ?: token ?: ""  // renamed: getToken() clashed with val token
+    fun resolveToken() = token ?: ""
 }
 
 data class LoginRequest(
@@ -34,8 +39,8 @@ data class OtpResponse(
 data class RegisterRequest(
     val email: String,
     val password: String,
-    val first_name: String,
-    val last_name: String,
+    @SerializedName("first_name") val first_name: String,
+    @SerializedName("last_name") val last_name: String,
     val gender: String = "MALE",
     val registration_type: String = "SELF_REGISTERED"
 )
@@ -74,7 +79,7 @@ data class Notification(
     val titre: String? = null,
     val title: String? = null,
     val corps: String? = null,
-    val message: String? = null,   // clashes with getMessage()
+    val message: String? = null,
     val type: String,
     val date: String? = null,
     val created_at: String? = null,
@@ -82,7 +87,7 @@ data class Notification(
     val read: Boolean = false,
     val marcheId: String? = null
 ) {
-    fun resolveTitle() = titre ?: title ?: ""      // renamed: getTitle() clashed with val title
-    fun resolveMessage() = corps ?: message ?: ""  // renamed: getMessage() clashed with val message
+    fun resolveTitle() = titre ?: title ?: ""
+    fun resolveMessage() = corps ?: message ?: ""
     fun isRead() = lue || read
 }

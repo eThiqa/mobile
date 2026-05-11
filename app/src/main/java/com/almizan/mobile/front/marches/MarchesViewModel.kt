@@ -8,8 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.almizan.mobile.data.api.ApiClient
 import com.almizan.mobile.data.models.Marche
 import com.almizan.mobile.utils.Resource
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MarchesViewModel(app: Application) : AndroidViewModel(app) {
@@ -19,51 +17,46 @@ class MarchesViewModel(app: Application) : AndroidViewModel(app) {
     private val _marches = MutableLiveData<Resource<List<Marche>>>()
     val marches: LiveData<Resource<List<Marche>>> = _marches
 
-    private var allMarches: List<Marche> = emptyList()
+    private var currentSearch: String? = null
     private var currentStatut: String? = null
-    private var searchJob: Job? = null
 
-    fun loadMarches() {
+    fun loadMarches() {        // Set loading state first
         _marches.value = Resource.Loading
+
+        // Start the coroutine on a new line
         viewModelScope.launch {
             try {
-                val response = api.getMarches()
+                android.util.Log.d("DEBUG_LOG", "Searching: $currentSearch, Status: $currentStatut")
+
+                val response = api.getMarches(
+                    search = currentSearch,
+                    statut = currentStatut
+                )
+
                 if (response.isSuccessful) {
-                    allMarches = response.body()?.data ?: emptyList()
-                    applyFilters()
+                    val paginatedBody = response.body()
+                    // Extract data list from the PaginatedResponse object
+                    val list: List<Marche> = paginatedBody?.data ?: emptyList()
+
+                    _marches.value = Resource.Success(list)
                 } else {
+                    android.util.Log.e("DEBUG_LOG", "Response code: ${response.code()}")
                     _marches.value = Resource.Error("Erreur ${response.code()}")
                 }
             } catch (e: Exception) {
-                _marches.value = Resource.Error("Connexion impossible")
+                android.util.Log.e("DEBUG_LOG", "Logic Error: ", e)
+                _marches.value = Resource.Error("Connexion impossible: ${e.message}")
             }
         }
+    }
+
+    fun search(query: String) {
+        currentSearch = query.ifBlank { null }
+        loadMarches()
     }
 
     fun filterByStatut(statut: String?) {
         currentStatut = statut
-        val filtered = if (statut == null) allMarches
-        else allMarches.filter { it.status == statut }
-        _marches.value = Resource.Success(filtered)
-    }
-
-    fun search(query: String) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(300)
-            val filtered = allMarches.filter { marche ->
-                (currentStatut == null || marche.status == currentStatut) &&
-                        (query.isBlank() ||
-                                marche.getTitre().contains(query, ignoreCase = true) ||
-                                marche.getReference().contains(query, ignoreCase = true))
-            }
-            _marches.value = Resource.Success(filtered)
-        }
-    }
-
-    private fun applyFilters() {
-        val filtered = if (currentStatut == null) allMarches
-        else allMarches.filter { it.status == currentStatut }  // was: it.statut.name
-        _marches.value = Resource.Success(filtered)
+        loadMarches()
     }
 }

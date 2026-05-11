@@ -47,6 +47,13 @@ data class MarcheVersion(
 data class Visa(
     val id: String,
     val numero_visa: String = "",
-    val est_actif: Boolean = false,
-    val date_expiration: String? = null
+    val ao_id: String? = null,
+    val demande_visa_id: String, // NOT NULL
+    val delivre_par: String,     // NOT NULL
+    val delivre_le: String,      // timestamp
+    val signature_electronique: String? = null,
+    val date_expiration: String? = null,
+    val est_actif: Boolean = true, // DEFAULT: true
+    val created_at: String = "",
+    val updated_at: String = ""
 )

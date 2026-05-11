@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header avec avatar -->
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,15 +20,13 @@
             android:paddingBottom="28dp"
             android:background="?attr/colorPrimary">
 
-            <!-- Avatar initiales -->
             <FrameLayout
                 android:layout_width="80dp"
                 android:layout_height="80dp">
-
                 <TextView
+                    android:id="@+id/tvAvatar"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:id="@+id/tvAvatar"
                     android:gravity="center"
                     android:textSize="28sp"
                     android:textStyle="bold"
@@ -53,6 +51,15 @@
                 android:layout_height="wrap_content"
                 android:text="Opérateur Économique"
                 android:textSize="13sp"
+                android:textColor="#AADFC0"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvStatut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏳ En attente"
+                android:textSize="12sp"
                 android:textColor="#AADFC0"
                 android:layout_marginTop="4dp"/>
 
@@ -83,6 +90,7 @@
 
             <!-- Nom -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nom"
@@ -93,11 +101,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
-                    android:enabled="false"/>
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:textColor="?attr/colorOnSurface"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Prénom -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPrenom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Prénom"
@@ -108,11 +119,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
-                    android:enabled="false"/>
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:textColor="?attr/colorOnSurface"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Téléphone -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTelephone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Téléphone"
@@ -123,54 +137,48 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"
-                    android:enabled="false"/>
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:textColor="?attr/colorOnSurface"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Séparateur -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?attr/colorOutline"
-                android:layout_marginVertical="16dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Informations entreprise"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                android:layout_marginBottom="10dp"/>
-
-            <!-- Raison sociale -->
+            <!-- Wilaya -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilWilaya"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Raison sociale"
+                android:hint="Wilaya"
                 style="@style/Widget.AlMizan.TextInputLayout"
                 android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etRaisonSociale"
+                    android:id="@+id/etWilaya"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"/>
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:textColor="?attr/colorOnSurface"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Registre commerce -->
+            <!-- Adresse -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilAdresse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="N° Registre de Commerce"
+                android:hint="Adresse"
                 style="@style/Widget.AlMizan.TextInputLayout"
                 android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etRegistreCommerce"
+                    android:id="@+id/etAdresse"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"/>
+                    android:inputType="textMultiLine"
+                    android:minLines="2"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:textColor="?attr/colorOnSurface"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Bouton Modifier / Sauvegarder -->
+            <!-- Bouton Modifier -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnModifier"
                 android:layout_width="match_parent"
@@ -180,6 +188,7 @@
                 style="@style/Widget.AlMizan.Button.Outlined"
                 app:cornerRadius="12dp"/>
 
+            <!-- Bouton Sauvegarder -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSauvegarder"
                 android:layout_width="match_parent"
@@ -199,7 +208,6 @@
                 android:indeterminateTint="?attr/colorPrimary"
                 android:visibility="gone"/>
 
-            <!-- Séparateur -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

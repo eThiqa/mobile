@@ -19,7 +19,6 @@ class SoumissionViewModel(app: Application) : AndroidViewModel(app) {
     private val api = ApiClient.create(app)
     private var marcheId: String = ""
 
-    // Documents par enveloppe
     val documentsAdmin = MutableLiveData<MutableList<Uri>>(mutableListOf())
     val documentTechnique = MutableLiveData<Uri?>()
     val documentFinancier = MutableLiveData<Uri?>()
@@ -47,46 +46,61 @@ class SoumissionViewModel(app: Application) : AndroidViewModel(app) {
         list.remove(uri)
         documentsAdmin.value = list
     }
+
     fun confirmerSoumission() {
         if (marcheId.isBlank()) {
             _soumissionState.value = Resource.Error("Marché non identifié")
-            return
-        }
-        val montant = montantOffre.value?.toDoubleOrNull()
-        if (montant == null || montant <= 0) {
-            _soumissionState.value = Resource.Error("Montant de l'offre financière invalide")
             return
         }
 
         _soumissionState.value = Resource.Loading
         viewModelScope.launch {
             try {
-                val docFinancier = documentFinancier.value
-                if (docFinancier != null) {
-                    val bytes = ByteArray(0)
-                    val reqBody = okhttp3.RequestBody.create(
-                        "application/pdf".toMediaTypeOrNull(), bytes
-                    )
-                    val finPart = MultipartBody.Part.createFormData(
-                        "file", "offre_financiere.pdf", reqBody
-                    )
-                    val montantBody = okhttp3.RequestBody.create(
-                        "text/plain".toMediaTypeOrNull(), montant.toString()
-                    )
-                    api.uploadEnveloppeFinanciere(marcheId, finPart, montantBody)
+                // Step 1: créer le brouillon
+                val createResponse = api.creerSoumission(mapOf("aoId" to marcheId))
+                if (!createResponse.isSuccessful) {
+                    val msg = when (createResponse.code()) {
+                        409 -> "Une offre a déjà été déposée pour ce marché"
+                        403 -> "Délai de soumission dépassé"
+                        else -> "Erreur création ${createResponse.code()}"
+                    }
+                    _soumissionState.value = Resource.Error(msg)
+                    return@launch
                 }
 
-                val response = api.confirmerSoumission(marcheId)
-                if (response.isSuccessful) {
-                    val data = response.body()?.data
-                    if (data != null) _soumissionState.value = Resource.Success(data)
-                    else _soumissionState.value = Resource.Error("Réponse invalide")
+                // ✅ Fix ligne 71 : body() = ApiResponse<Soumission>, extraire .data?.id
+                val soumissionId = createResponse.body()?.data?.id
+                if (soumissionId.isNullOrBlank()) {
+                    _soumissionState.value = Resource.Error("Réponse invalide")
+                    return@launch
+                }
+
+                // Step 2: upload pièces admin (bytes vides en attendant la vraie lecture)
+                documentsAdmin.value?.forEachIndexed { index, _ ->
+                    val bytes = ByteArray(0)
+                    val reqBody = bytes.toRequestBody("application/pdf".toMediaTypeOrNull())
+                    val part = MultipartBody.Part.createFormData(
+                        "file", "admin_doc_$index.pdf", reqBody
+                    )
+                    api.uploadAdminAttachment(soumissionId, part)
+                }
+
+                // Step 3: soumettre
+                val submitResponse = api.soumettreSoumission(soumissionId)
+                if (submitResponse.isSuccessful) {
+                    // ✅ Fix ligne 92 : body() = ApiResponse<Soumission>, extraire .data
+                    val soumission = submitResponse.body()?.data
+                    if (soumission != null) {
+                        _soumissionState.value = Resource.Success(soumission)
+                    } else {
+                        _soumissionState.value = Resource.Error("Réponse invalide")
+                    }
                 } else {
-                    val msg = when (response.code()) {
-                        400 -> "Dossier incomplet"
+                    val msg = when (submitResponse.code()) {
+                        400 -> "Dossier incomplet — vérifiez les enveloppes"
                         403 -> "Délai de soumission dépassé"
-                        409 -> "Une offre a déjà été déposée pour ce marché"
-                        else -> "Erreur ${response.code()}"
+                        409 -> "Une offre a déjà été déposée"
+                        else -> "Erreur ${submitResponse.code()}"
                     }
                     _soumissionState.value = Resource.Error(msg)
                 }
@@ -95,4 +109,4 @@ class SoumissionViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
     }
-  }
+}
