@@ -1,5 +1,5 @@
 package com.almizan.mobile.front.marches
-
+import kotlinx.coroutines.delay
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -42,7 +42,34 @@ class MarcheDetailViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
     }
+    private val _withdrawalState = MutableLiveData<Resource<Boolean>>()
+    val withdrawalState: LiveData<Resource<Boolean>> = _withdrawalState
 
+    fun payerEtRetirerCdc(marcheId: String, nomComplet: String, email: String) {
+        _withdrawalState.value = Resource.Loading
+        viewModelScope.launch {
+            try {
+                // 1. Simulation de l'API de paiement (ex: CIB / Edahabia)
+                delay(2000) // Simule 2 secondes de traitement bancaire
+
+                // 2. Appel au backend pour enregistrer le retrait légal du CDC
+                val payload = mapOf(
+                    "participant_name" to nomComplet,
+                    "participant_email" to email,
+                    "source" to "AUTHENTICATED"
+                )
+                val response = api.retirerCdc(marcheId, payload)
+
+                if (response.isSuccessful) {
+                    _withdrawalState.value = Resource.Success(true)
+                } else {
+                    _withdrawalState.value = Resource.Error("Erreur lors de l'enregistrement du retrait")
+                }
+            } catch (e: Exception) {
+                _withdrawalState.value = Resource.Error("Échec du paiement ou de la connexion")
+            }
+        }
+    }
     fun downloadCdc(marcheId: String) {
         viewModelScope.launch {
             try { api.downloadCdc(marcheId) } catch (_: Exception) {}

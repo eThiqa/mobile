@@ -68,6 +68,11 @@ interface ApiService {
         @Path("id") id: String,
         @Body body: Map<String, String>
     ): Response<ApiResponse<Question>>
+    @POST("tenders/{id}/withdrawals")
+    suspend fun retirerCdc(
+        @Path("id") id: String,
+        @Body body: Map<String, String>
+    ): Response<ApiResponse<Any>>
 
     // ================= SOUMISSIONS =================
 
@@ -122,7 +127,7 @@ interface ApiService {
     // ================= NOTIFICATIONS =================
 
     @GET("notifications")
-    suspend fun getNotifications(): Response<List<Notification>> // Changed to List
+    suspend fun getNotifications(): Response<PaginatedResponse<Notification>>
 
     @PATCH("notifications/{id}/read") // Updated to PATCH to match backend
     suspend fun marquerLue(

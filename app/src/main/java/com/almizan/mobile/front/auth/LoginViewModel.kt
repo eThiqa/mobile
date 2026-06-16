@@ -40,6 +40,10 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
                             val token = body.resolveToken()
                             val user = body.user
                             if (user != null && token.isNotEmpty()) {
+                                if (user.role != "OE" && user.role != "OPERATEUR") {
+                                    _loginState.value = Resource.Error("Accès refusé : L'application mobile est réservée aux Opérateurs Économiques.")
+                                    return@launch
+                                }
                                 session.saveSession(
                                     token = token,
                                     userId = user.id,

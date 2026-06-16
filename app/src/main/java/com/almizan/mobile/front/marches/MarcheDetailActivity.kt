@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.almizan.mobile.databinding.ActivityMarcheDetailBinding
 import com.almizan.mobile.front.soumission.SoumissionActivity
 import com.almizan.mobile.utils.Resource
+import com.almizan.mobile.utils.SessionManager // ✅ Nouvel import ajouté
 import com.google.android.material.snackbar.Snackbar
 import java.text.NumberFormat
 import java.util.Locale
@@ -27,9 +28,12 @@ class MarcheDetailActivity : AppCompatActivity() {
         marcheId = intent.getStringExtra("marche_id") ?: ""
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Initialisation de la session
+        val session = SessionManager(this)
+
         viewModel.loadMarche(marcheId)
 
-        // Questions button
+        // Bouton Questions
         binding.btnQuestions.setOnClickListener {
             val intent = Intent(this, QuestionsActivity::class.java)
             intent.putExtra("marche_id", marcheId)
@@ -37,10 +41,19 @@ class MarcheDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Download CDC button
+        // --- NOUVELLE LOGIQUE DE PAIEMENT / RETRAIT CDC ---
+
+        // Par défaut, on cache le bouton soumettre jusqu'à ce que le CDC soit payé
+        binding.btnSoumettre.visibility = View.GONE
+
+        // Bouton Télécharger CDC devient "Payer et Retirer"
+        binding.btnDownloadCdc.text = "💳 Payer et retirer le CDC"
         binding.btnDownloadCdc.setOnClickListener {
-            Snackbar.make(binding.root, "Téléchargement du CDC...", Snackbar.LENGTH_SHORT).show()
-            // TODO: open CDC URL in browser or download
+            val nom = session.getUserData("nom") ?: "Nom"
+            val prenom = session.getUserData("prenom") ?: "Prénom"
+            val email = session.getUserData("user_email") ?: "email@test.com"
+
+            viewModel.payerEtRetirerCdc(marcheId, "$prenom $nom", email)
         }
 
         // Submit offer button
@@ -50,6 +63,29 @@ class MarcheDetailActivity : AppCompatActivity() {
             intent.putExtra("marche_titre", marcheTitre)
             startActivity(intent)
         }
+
+        // Ajouter l'observation du paiement
+        viewModel.withdrawalState.observe(this) { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    binding.btnDownloadCdc.isEnabled = false
+                    binding.btnDownloadCdc.text = "⏳ Traitement du paiement..."
+                }
+                is Resource.Success -> {
+                    binding.btnDownloadCdc.isEnabled = false
+                    binding.btnDownloadCdc.text = "✅ CDC Payé et Retiré"
+                    binding.btnSoumettre.visibility = View.VISIBLE // 🔓 Débloque la soumission
+                    Snackbar.make(binding.root, "Paiement CIB validé avec succès !", Snackbar.LENGTH_LONG).show()
+                }
+                is Resource.Error -> {
+                    binding.btnDownloadCdc.isEnabled = true
+                    binding.btnDownloadCdc.text = "💳 Réessayer le paiement"
+                    Snackbar.make(binding.root, resource.message, Snackbar.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        // --- OBSERVATION DES DÉTAILS DU MARCHÉ ---
 
         viewModel.marche.observe(this) { resource ->
             when (resource) {
@@ -77,9 +113,11 @@ class MarcheDetailActivity : AppCompatActivity() {
                         binding.rowBudget.visibility = View.VISIBLE
                     }
 
-                    binding.btnDownloadCdc.isEnabled = m.version_courante?.cdc_contenu != null
-                    binding.btnSoumettre.visibility =
-                        if (m.status == "PUBLISHED") View.VISIBLE else View.GONE
+                    // On vérifie seulement s'il y a un CDC à la base, mais on préserve
+                    // le texte "✅ CDC Payé et Retiré" s'il a déjà été payé durant la session
+                    if (binding.btnDownloadCdc.text != "✅ CDC Payé et Retiré") {
+                        binding.btnDownloadCdc.isEnabled = m.version_courante?.cdc_contenu != null
+                    }
                 }
                 is Resource.Error -> {
                     Snackbar.make(binding.root, (resource as Resource.Error).message, Snackbar.LENGTH_LONG).show()
@@ -88,5 +126,8 @@ class MarcheDetailActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean { finish(); return true }
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
 }
